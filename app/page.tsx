@@ -34,6 +34,13 @@ export default function Home() {
       <footer className="border-t">
         <div className="mx-auto flex w-full max-w-4xl items-center justify-between gap-4 px-6 py-6 text-sm text-muted-foreground">
           <span>© {new Date().getFullYear()} Marko Portfolio</span>
+          <a
+            href="/admin"
+            aria-label="Admin"
+            className="text-xs text-muted-foreground/40 transition-colors hover:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+          >
+            admin
+          </a>
         </div>
       </footer>
     </div>
