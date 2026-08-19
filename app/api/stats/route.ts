@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server"
 
 import { api, logApiRequestError, toApiRequestError } from "@/lib/api"
-import { getSession } from "@/lib/auth"
 import {
   PROJECT_STATUSES,
   type DashboardStats,
@@ -18,20 +17,13 @@ type ModuleResult<T> = {
   status: number
 }
 
-async function fetchModule<T>(
-  path: string,
-  token: string,
-  username: string | null,
-  startedAt: number
-): Promise<ModuleResult<T>> {
+async function fetchModule<T>(path: string, startedAt: number): Promise<ModuleResult<T>> {
   try {
-    const { data, status } = await api.get<T>(path, {
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const { data, status } = await api.get<T>(path)
     return { data, status }
   } catch (error) {
     const apiError = toApiRequestError(error)
-    logApiRequestError("api/stats", `GET ${path}`, error, { username, startedAt })
+    logApiRequestError("api/stats", `GET ${path}`, error, { startedAt })
     return { status: apiError.status }
   }
 }
@@ -41,31 +33,17 @@ async function fetchModule<T>(
  *
  * Aggregates dashboard statistics from the backend `/skills`, `/projects`, and
  * `/site` endpoints. Each module is fetched independently so one failing
- * module doesn't take down the whole dashboard.
+ * module doesn't take down the whole dashboard. The backend serves these GETs
+ * publicly, so no admin session is required.
  */
 export async function GET() {
-  const session = await getSession()
-
-  if (!session) {
-    console.warn("[api/stats] GET rejected: no session")
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 })
-  }
-
   const startedAt = Date.now()
 
   const [skills, projects, site] = await Promise.all([
-    fetchModule<SkillTechnology[]>("/skills", session.token, session.username, startedAt),
-    fetchModule<Project[]>("/projects", session.token, session.username, startedAt),
-    fetchModule<SiteSettings>("/site", session.token, session.username, startedAt),
+    fetchModule<SkillTechnology[]>("/skills", startedAt),
+    fetchModule<Project[]>("/projects", startedAt),
+    fetchModule<SiteSettings>("/site", startedAt),
   ])
-
-  if ([skills, projects, site].every((result) => result.status === 401)) {
-    console.warn("[api/stats] GET rejected: all module fetches returned 401")
-    return NextResponse.json(
-      { error: "Your session has expired. Please sign in again." },
-      { status: 401 }
-    )
-  }
 
   const errors: string[] = []
   if (!skills.data) errors.push("Skills could not be loaded right now.")

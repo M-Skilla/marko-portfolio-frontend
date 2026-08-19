@@ -10,28 +10,17 @@ export const dynamic = "force-dynamic"
  * GET /api/skills
  *
  * Proxies the backend `GET /skills` endpoint (list all skills/technologies).
+ * The backend serves this publicly, so no admin session is required.
  */
 export async function GET() {
-  const session = await getSession()
-
-  if (!session) {
-    console.warn("[api/skills] GET rejected: no session")
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 })
-  }
-
   const startedAt = Date.now()
 
   try {
-    const { data } = await api.get<SkillTechnology[]>("/skills", {
-      headers: { Authorization: `Bearer ${session.token}` },
-    })
+    const { data } = await api.get<SkillTechnology[]>("/skills")
     return NextResponse.json(data)
   } catch (error) {
     const apiError = toApiRequestError(error)
-    logApiRequestError("api/skills", "GET", error, {
-      username: session.username,
-      startedAt,
-    })
+    logApiRequestError("api/skills", "GET", error, { startedAt })
     return NextResponse.json({ error: apiError.message }, { status: apiError.status })
   }
 }

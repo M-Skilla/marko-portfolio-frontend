@@ -9,33 +9,22 @@ export const dynamic = "force-dynamic"
 /**
  * GET /api/skills/[id]
  *
- * Proxies the backend `GET /skills/{id}` endpoint (fetch a single skill).
+ * Proxies the backend `GET /skills/{id}` endpoint (fetch a single skill). The
+ * backend serves this publicly, so no admin session is required.
  */
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await getSession()
-
-  if (!session) {
-    console.warn("[api/skills/[id]] GET rejected: no session")
-    return NextResponse.json({ error: "Unauthorized." }, { status: 401 })
-  }
-
   const { id } = await params
   const startedAt = Date.now()
 
   try {
-    const { data } = await api.get<SkillTechnology>(`/skills/${id}`, {
-      headers: { Authorization: `Bearer ${session.token}` },
-    })
+    const { data } = await api.get<SkillTechnology>(`/skills/${id}`)
     return NextResponse.json(data)
   } catch (error) {
     const apiError = toApiRequestError(error)
-    logApiRequestError("api/skills/[id]", "GET", error, {
-      username: session.username,
-      startedAt,
-    })
+    logApiRequestError("api/skills/[id]", "GET", error, { startedAt })
     return NextResponse.json({ error: apiError.message }, { status: apiError.status })
   }
 }
