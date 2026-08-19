@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUpRight } from "lucide-react"
 
+import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
 import { fetchPublic } from "@/lib/server-api"
 import type { SiteSettings } from "@/lib/types"
@@ -29,6 +30,7 @@ export async function PortfolioHero() {
   return (
     <section className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-6 pt-24 pb-16">
       <div className="flex flex-col gap-4">
+        <Logo className="size-14" />
         <h1 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
           {site?.heroTitle ?? "Portfolio"}
         </h1>
