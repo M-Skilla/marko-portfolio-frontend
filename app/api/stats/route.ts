@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { api, toApiRequestError } from "@/lib/api"
+import { api, logApiRequestError, toApiRequestError } from "@/lib/api"
 import { getSession } from "@/lib/auth"
 import {
   PROJECT_STATUSES,
@@ -18,7 +18,12 @@ type ModuleResult<T> = {
   status: number
 }
 
-async function fetchModule<T>(path: string, token: string): Promise<ModuleResult<T>> {
+async function fetchModule<T>(
+  path: string,
+  token: string,
+  username: string | null,
+  startedAt: number
+): Promise<ModuleResult<T>> {
   try {
     const { data, status } = await api.get<T>(path, {
       headers: { Authorization: `Bearer ${token}` },
@@ -26,6 +31,7 @@ async function fetchModule<T>(path: string, token: string): Promise<ModuleResult
     return { data, status }
   } catch (error) {
     const apiError = toApiRequestError(error)
+    logApiRequestError("api/stats", `GET ${path}`, error, { username, startedAt })
     return { status: apiError.status }
   }
 }
@@ -41,16 +47,20 @@ export async function GET() {
   const session = await getSession()
 
   if (!session) {
+    console.warn("[api/stats] GET rejected: no session")
     return NextResponse.json({ error: "Unauthorized." }, { status: 401 })
   }
 
+  const startedAt = Date.now()
+
   const [skills, projects, site] = await Promise.all([
-    fetchModule<SkillTechnology[]>("/skills", session.token),
-    fetchModule<Project[]>("/projects", session.token),
-    fetchModule<SiteSettings>("/site", session.token),
+    fetchModule<SkillTechnology[]>("/skills", session.token, session.username, startedAt),
+    fetchModule<Project[]>("/projects", session.token, session.username, startedAt),
+    fetchModule<SiteSettings>("/site", session.token, session.username, startedAt),
   ])
 
   if ([skills, projects, site].every((result) => result.status === 401)) {
+    console.warn("[api/stats] GET rejected: all module fetches returned 401")
     return NextResponse.json(
       { error: "Your session has expired. Please sign in again." },
       { status: 401 }

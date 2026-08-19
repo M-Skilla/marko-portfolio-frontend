@@ -9,10 +9,15 @@ import { getSession } from "@/lib/auth"
  * does, the username stored in the JWT.
  */
 export async function GET() {
-  const session = await getSession()
+  try {
+    const session = await getSession()
 
-  return NextResponse.json({
-    authenticated: session !== null,
-    username: session?.username ?? null,
-  })
+    return NextResponse.json({
+      authenticated: session !== null,
+      username: session?.username ?? null,
+    })
+  } catch (error) {
+    console.error("[api/auth/session] Failed to read session:", error)
+    return NextResponse.json({ authenticated: false, username: null })
+  }
 }

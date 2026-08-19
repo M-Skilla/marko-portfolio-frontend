@@ -53,6 +53,42 @@ export function toApiRequestError(error: unknown): ApiRequestError {
   return new ApiRequestError(null, 500)
 }
 
+/**
+ * Log a failed backend/upload request with enough context to debug
+ * connection/timeout issues. Never logs the Authorization header (would leak
+ * the JWT into server logs) — only non-sensitive metadata.
+ */
+export function logApiRequestError(
+  route: string,
+  method: string,
+  error: unknown,
+  context: { username?: string | null; startedAt?: number } = {}
+) {
+  const apiError = toApiRequestError(error)
+
+  const details: Record<string, unknown> = {
+    method,
+    status: apiError.status,
+    message: error instanceof Error ? error.message : String(error),
+  }
+
+  if (context.username !== undefined) details.user = context.username
+  if (context.startedAt !== undefined) details.elapsedMs = Date.now() - context.startedAt
+
+  if (axios.isAxiosError(error)) {
+    details.axios = {
+      code: error.code,
+      url: error.config?.url,
+      baseURL: error.config?.baseURL,
+      timeoutMs: error.config?.timeout,
+      hasResponse: !!error.response,
+      responseStatus: error.response?.status,
+    }
+  }
+
+  console.error(`[${route}] ${method} failed:`, details)
+}
+
 function extractErrorMessage(body: unknown): string | null {
   if (body && typeof body === "object") {
     const record = body as Record<string, unknown>

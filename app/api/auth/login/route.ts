@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { api, toApiRequestError } from "@/lib/api"
+import { api, logApiRequestError, toApiRequestError } from "@/lib/api"
 import { setSession } from "@/lib/auth"
 
 type LoginRequestBody = {
@@ -38,6 +38,8 @@ export async function POST(request: Request) {
     )
   }
 
+  const startedAt = Date.now()
+
   try {
     const { data } = await api.post<LoginResponse>("/auth/login", { username, password })
 
@@ -54,7 +56,7 @@ export async function POST(request: Request) {
       )
     }
 
-    console.error("[api/auth/login] Login failed:", error)
+    logApiRequestError("api/auth/login", "POST", error, { startedAt })
 
     const status = apiError.status
     const message =

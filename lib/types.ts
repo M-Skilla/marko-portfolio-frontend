@@ -15,6 +15,12 @@ export type SkillTechnology = {
   category?: string
 }
 
+export type SkillTechnologyRequest = {
+  name: string
+  iconSvg?: string
+  category?: string
+}
+
 export type ProjectMedia = {
   id: string
   mediaUrl: string
@@ -39,8 +45,33 @@ export type Project = {
   media?: ProjectMedia[]
 }
 
+export type ProjectRequest = {
+  name: string
+  description?: string
+  techStack?: string
+  projectUrl?: string
+  repoUrl?: string
+  featuredImageUrl?: string
+  featured?: boolean
+  status?: ProjectStatus
+  completedAt?: string | null
+  skills?: string[]
+}
+
 export type SiteSettings = {
   id: number
+  heroTitle?: string
+  heroSubtitle?: string
+  aboutMe?: string
+  resumeUrl?: string
+  githubUrl?: string
+  twitterUrl?: string
+  linkedInUrl?: string
+  metaTitle?: string
+  metaDescription?: string
+}
+
+export type SiteSettingsRequest = {
   heroTitle?: string
   heroSubtitle?: string
   aboutMe?: string

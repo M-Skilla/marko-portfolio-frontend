@@ -1,5 +1,4 @@
 import axios from "axios"
-import { cookies, headers } from "next/headers"
 import {
   CircleAlert,
   FolderKanban,
@@ -9,6 +8,7 @@ import {
 } from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { apiClient } from "@/lib/server-api"
 import type { DashboardStats } from "@/lib/types"
 
 import { ProjectsStatusCard } from "./projects-status-card"
@@ -18,21 +18,7 @@ import { SkillsCard } from "./skills-card"
 import { StatCard } from "./stat-card"
 
 async function getDashboardStats(): Promise<DashboardStats> {
-  const cookieStore = await cookies()
-  const headerStore = await headers()
-
-  const host =
-    headerStore.get("x-forwarded-host")?.split(",")[0]?.trim() ??
-    headerStore.get("host") ??
-    "localhost:3000"
-  const proto = headerStore.get("x-forwarded-proto")?.split(",")[0]?.trim() ?? "http"
-  const origin = `${proto}://${host}`
-
-  const { data } = await axios.get<DashboardStats>(`${origin}/api/stats`, {
-    headers: { Cookie: cookieStore.toString() },
-  })
-
-  return data
+  return apiClient<DashboardStats>("/api/stats")
 }
 
 function pluralize(count: number, word: string): string {

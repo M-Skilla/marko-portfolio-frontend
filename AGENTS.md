@@ -23,6 +23,6 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Use `loading.tsx` for instant page transitions
 - Prioritize URL driven state for filters in tables and data grids
 - Use of parallel and intercepting routes when necessary especially in the admin part of the app.
-
+- All media that is requires a url should use vercel's blob storage
 
 <!-- END:nextjs-agent-rules -->
