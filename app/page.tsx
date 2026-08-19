@@ -1,15 +1,32 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
 
+import { fetchPublic } from "@/lib/server-api"
+import type { SiteSettings } from "@/lib/types"
+
 import { PortfolioHeader } from "./_components/portfolio-header"
 import { PortfolioHero } from "./_components/portfolio-hero"
 import { SkillsSection } from "./_components/skills-section"
 import { ProjectsSection } from "./_components/projects-section"
 import { HeroSkeleton, SectionSkeleton } from "./_components/portfolio-skeletons"
 
-export const metadata: Metadata = {
-  title: "Marko Portfolio",
-  description: "Portfolio of Marko — full-stack developer.",
+const DEFAULT_TITLE = "Marko Portfolio"
+const DEFAULT_DESCRIPTION = "Portfolio of Marko — full-stack developer."
+
+/** Pull the page metadata from the site settings (`metaTitle`/`metaDescription`). */
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const site = await fetchPublic<SiteSettings>("/api/site")
+    return {
+      title: site.metaTitle || DEFAULT_TITLE,
+      description: site.metaDescription || DEFAULT_DESCRIPTION,
+    }
+  } catch {
+    return {
+      title: DEFAULT_TITLE,
+      description: DEFAULT_DESCRIPTION,
+    }
+  }
 }
 
 export default function Home() {
