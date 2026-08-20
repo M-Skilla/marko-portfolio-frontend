@@ -2,8 +2,10 @@ import { NextResponse } from "next/server"
 
 import { api, logApiRequestError, toApiRequestError } from "@/lib/api"
 import {
+  type Achievement,
   PROJECT_STATUSES,
   type DashboardStats,
+  type FormalEducation,
   type Project,
   type ProjectStatus,
   type SiteSettings,
@@ -31,31 +33,46 @@ async function fetchModule<T>(path: string, startedAt: number): Promise<ModuleRe
 /**
  * GET /api/stats
  *
- * Aggregates dashboard statistics from the backend `/skills`, `/projects`, and
- * `/site` endpoints. Each module is fetched independently so one failing
- * module doesn't take down the whole dashboard. The backend serves these GETs
- * publicly, so no admin session is required.
+ * Aggregates dashboard statistics from the backend `/skills`, `/projects`,
+ * `/education`, `/achievements`, and `/site` endpoints. Each module is fetched
+ * independently so one failing module doesn't take down the whole dashboard.
+ * The backend serves these GETs publicly, so no admin session is required.
  */
 export async function GET() {
   const startedAt = Date.now()
 
-  const [skills, projects, site] = await Promise.all([
+  const [skills, projects, education, achievements, site] = await Promise.all([
     fetchModule<SkillTechnology[]>("/skills", startedAt),
     fetchModule<Project[]>("/projects", startedAt),
+    fetchModule<FormalEducation[]>("/education", startedAt),
+    fetchModule<Achievement[]>("/achievements", startedAt),
     fetchModule<SiteSettings>("/site", startedAt),
   ])
 
   const errors: string[] = []
   if (!skills.data) errors.push("Skills could not be loaded right now.")
   if (!projects.data) errors.push("Projects could not be loaded right now.")
+  if (!education.data) errors.push("Education could not be loaded right now.")
+  if (!achievements.data) errors.push("Achievements could not be loaded right now.")
   if (!site.data) errors.push("Site settings could not be loaded right now.")
 
-  return NextResponse.json(buildStats(skills.data, projects.data, site.data, errors))
+  return NextResponse.json(
+    buildStats(
+      skills.data,
+      projects.data,
+      education.data,
+      achievements.data,
+      site.data,
+      errors
+    )
+  )
 }
 
 function buildStats(
   skills: SkillTechnology[] | undefined,
   projects: Project[] | undefined,
+  education: FormalEducation[] | undefined,
+  achievements: Achievement[] | undefined,
   site: SiteSettings | undefined,
   errors: string[]
 ): DashboardStats {
@@ -110,6 +127,12 @@ function buildStats(
       recent,
     },
     media: { total: mediaTotal },
+    education: {
+      total: education?.length ?? 0,
+    },
+    achievements: {
+      total: achievements?.length ?? 0,
+    },
     site: {
       configured: Boolean(site && (site.heroTitle || site.metaTitle)),
       heroTitle: site?.heroTitle ?? null,

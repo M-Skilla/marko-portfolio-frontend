@@ -31,16 +31,20 @@ type FormState = {
   linkedInUrl: string
   metaTitle: string
   metaDescription: string
+  phone: string
+  email: string
 }
 
 const TEXT_INPUTS: {
   key: keyof FormState
   label: string
-  type?: "text" | "url"
+  type?: "text" | "url" | "email" | "tel"
   placeholder: string
 }[] = [
   { key: "heroTitle", label: "Hero title", placeholder: "Hi, I'm Marko" },
   { key: "heroSubtitle", label: "Hero subtitle", placeholder: "Full-stack developer" },
+  { key: "phone", label: "Phone", type: "tel", placeholder: "+1 555 123 4567" },
+  { key: "email", label: "Email", type: "email", placeholder: "marko@example.com" },
   { key: "resumeUrl", label: "Résumé URL", type: "url", placeholder: "https://…/resume.pdf" },
   { key: "githubUrl", label: "GitHub URL", type: "url", placeholder: "https://github.com/…" },
   { key: "twitterUrl", label: "Twitter / X URL", type: "url", placeholder: "https://twitter.com/…" },
@@ -85,6 +89,8 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
     linkedInUrl: settings?.linkedInUrl ?? "",
     metaTitle: settings?.metaTitle ?? "",
     metaDescription: settings?.metaDescription ?? "",
+    phone: settings?.phone ?? "",
+    email: settings?.email ?? "",
   })
   const [saved, setSaved] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)

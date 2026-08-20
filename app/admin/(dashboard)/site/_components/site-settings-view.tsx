@@ -1,5 +1,5 @@
 import axios from "axios"
-import { CircleAlert, ExternalLink, Globe, Info, Link2, Search } from "lucide-react"
+import { CircleAlert, ExternalLink, Globe, Info, Link2, Phone, Search } from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
@@ -78,6 +78,13 @@ function SiteSettingsOverview({ settings }: { settings: SiteSettings }) {
 
         <Section title="About" icon={<Info aria-hidden="true" />}>
           <Row label="About me" value={settings.aboutMe} />
+        </Section>
+
+        <Separator />
+
+        <Section title="Contact" icon={<Phone aria-hidden="true" />}>
+          <Row label="Phone" value={settings.phone} />
+          <Row label="Email" value={settings.email} href={settings.email ? true : undefined} />
         </Section>
 
         <Separator />

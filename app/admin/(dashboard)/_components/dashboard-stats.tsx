@@ -2,8 +2,10 @@ import axios from "axios"
 import {
   CircleAlert,
   FolderKanban,
+  GraduationCap,
   Image as ImageIcon,
   Settings,
+  Trophy,
   Wrench,
 } from "lucide-react"
 
@@ -71,6 +73,20 @@ export async function DashboardStats() {
           description={`${stats.skills.categories.length} categories`}
           icon={Wrench}
           iconClassName="bg-violet-500/10 text-violet-600 dark:text-violet-400"
+        />
+        <StatCard
+          label="Education"
+          value={stats.education.total}
+          description={pluralize(stats.education.total, "entry")}
+          icon={GraduationCap}
+          iconClassName="bg-sky-500/10 text-sky-600 dark:text-sky-400"
+        />
+        <StatCard
+          label="Achievements"
+          value={stats.achievements.total}
+          description={`${stats.achievements.total === 0 ? "no awards yet" : "awards & honors"}`}
+          icon={Trophy}
+          iconClassName="bg-amber-500/10 text-amber-600 dark:text-amber-400"
         />
         <StatCard
           label="Media"

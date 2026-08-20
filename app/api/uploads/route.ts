@@ -6,7 +6,7 @@ import { getSession } from "@/lib/auth"
 
 export const dynamic = "force-dynamic"
 
-const ALLOWED_FOLDERS = ["projects", "skills", "site"] as const
+const ALLOWED_FOLDERS = ["projects", "skills", "site", "achievements"] as const
 type AllowedFolder = (typeof ALLOWED_FOLDERS)[number]
 
 const DEFAULT_FOLDER: AllowedFolder = "projects"

@@ -11,6 +11,8 @@ REST API for the Marko Portfolio site. This document describes every endpoint, t
 - [Endpoints](#endpoints)
   - [Auth](#auth)
   - [Skills & Technologies](#skills--technologies)
+  - [Formal Education](#formal-education)
+  - [Achievements](#achievements)
   - [Site settings](#site-settings)
   - [Projects](#projects)
   - [Project media](#project-media)
@@ -32,7 +34,7 @@ All endpoints below are relative to the base URL.
 
 ## Authentication
 
-The API is protected with **JWT bearer tokens**. Every request to `/projects`, `/skills`, `/site`, and `/media` must include:
+The API is protected with **JWT bearer tokens**. Every write request (`POST`, `PUT`, `DELETE`) to `/projects`, `/skills`, `/education`, `/achievements`, `/site`, and `/media` must include:
 
 ```
 Authorization: Bearer <token>
@@ -42,6 +44,11 @@ Only the following paths are publicly accessible:
 
 - `POST /auth/register`
 - `POST /auth/login`
+- `GET /projects`, `GET /projects/{slug}`
+- `GET /skills`, `GET /skills/{id}`
+- `GET /education`, `GET /education/{id}`
+- `GET /achievements`, `GET /achievements/{id}`
+- `GET /site`
 - `/h2-console/**` (dev only)
 - Swagger UI / OpenAPI docs (`/swagger-ui/**`, `/v3/api-docs/**`)
 
@@ -154,6 +161,134 @@ Delete a skill by its UUID.
 
 ---
 
+### Formal Education
+
+Formal education history (degrees, schools). All `LocalDate` values serialize as **`YYYY-MM-DD`** with no time component; `endDate: null` means the education is **still ongoing/current**.
+
+#### `GET /education`
+
+List all education entries.
+
+**Response** — `200 OK`
+
+```json
+[
+  {
+    "id": "3f2c1a4e-...",
+    "institution": "University of Zagreb",
+    "degree": "Bachelor of Science",
+    "fieldOfStudy": "Computer Science",
+    "startDate": "2016-09-01",
+    "endDate": "2020-06-30",
+    "description": "Focus on software engineering.",
+    "location": "Zagreb, Croatia",
+    "grade": "8.5/10"
+  }
+]
+```
+
+#### `POST /education`
+
+Create a new education entry.
+
+**Request body** — `FormalEducationRequest`
+
+| Field | Type | Description |
+|---|---|---|
+| `institution` | string | School/university name (**required**) |
+| `degree` | string | e.g. "Bachelor of Science" |
+| `fieldOfStudy` | string | e.g. "Computer Science" |
+| `startDate` | date | `YYYY-MM-DD` (**required**) |
+| `endDate` | date \| null | `YYYY-MM-DD`, or `null` for ongoing/current |
+| `description` | string | Free-text description |
+| `location` | string | e.g. "Zagreb, Croatia" |
+| `grade` | string | GPA/grade, kept as a string |
+
+**Response** — `201 Created` with the created `FormalEducation`.
+
+#### `GET /education/{id}`
+
+Fetch a single education entry by its UUID.
+
+**Response** — `200 OK` with a `FormalEducation`, or `404 Not Found` if no entry has that id.
+
+#### `PUT /education/{id}`
+
+Update an existing education entry.
+
+**Request body** — same as `POST /education` (`FormalEducationRequest`).
+
+**Response** — `200 OK` with the updated `FormalEducation`, or `404 Not Found` if the id doesn't exist.
+
+#### `DELETE /education/{id}`
+
+Delete an education entry by its UUID.
+
+**Response** — `204 No Content` on success, or `404 Not Found`.
+
+---
+
+### Achievements
+
+Awards, certifications, and honors.
+
+#### `GET /achievements`
+
+List all achievements.
+
+**Response** — `200 OK`
+
+```json
+[
+  {
+    "id": "7a9b1c2d-...",
+    "name": "Winner — Hackathon 2025",
+    "imageUrl": "https://.../award.png",
+    "description": "First place in the national coding challenge.",
+    "achievedDate": "2025-05-12",
+    "issuer": "Tech Association"
+  }
+]
+```
+
+#### `POST /achievements`
+
+Create a new achievement.
+
+**Request body** — `AchievementRequest`
+
+| Field | Type | Description |
+|---|---|---|
+| `name` | string | Achievement name (**required**) |
+| `imageUrl` | string | Image URL (badge/certificate) |
+| `description` | string | Free-text description |
+| `achievedDate` | date \| null | `YYYY-MM-DD`, or `null` when unknown |
+| `issuer` | string | Granting organization |
+
+**Response** — `201 Created` with the created `Achievement`.
+
+#### `GET /achievements/{id}`
+
+Fetch a single achievement by its UUID.
+
+**Response** — `200 OK` with an `Achievement`, or `404 Not Found` if no achievement has that id.
+
+#### `PUT /achievements/{id}`
+
+Update an existing achievement.
+
+**Request body** — same as `POST /achievements` (`AchievementRequest`).
+
+**Response** — `200 OK` with the updated `Achievement`, or `404 Not Found` if the id doesn't exist.
+
+#### `DELETE /achievements/{id}`
+
+Delete an achievement by its UUID.
+
+**Response** — `204 No Content` on success, or `404 Not Found`.
+
+---
+
 ### Site settings
 
 Site-wide content for the portfolio (hero section, links, SEO metadata). There is a single settings row.
@@ -175,7 +310,9 @@ Fetch the current site settings.
   "twitterUrl": "https://twitter.com/marko",
   "linkedInUrl": "https://linkedin.com/in/marko",
   "metaTitle": "Marko — Portfolio",
-  "metaDescription": "Portfolio of Marko."
+  "metaDescription": "Portfolio of Marko.",
+  "phone": "+1 555 123 4567",
+  "email": "marko@example.com"
 }
 ```
 
@@ -190,6 +327,8 @@ Update the site settings. Fields left out (or null) are updated based on the ser
 | `heroTitle` | Hero headline |
 | `heroSubtitle` | Hero sub-headline |
 | `aboutMe` | About section text |
+| `phone` | Contact phone number |
+| `email` | Contact email address |
 | `resumeUrl` | Link to the résumé |
 | `githubUrl` | GitHub profile URL |
 | `twitterUrl` | Twitter/X profile URL |
@@ -346,8 +485,34 @@ Delete a media item by its UUID.
 |---|---|
 | `id` | integer (int64) |
 | `heroTitle`, `heroSubtitle`, `aboutMe` | string |
+| `phone`, `email` | string |
 | `resumeUrl`, `githubUrl`, `twitterUrl`, `linkedInUrl` | string |
 | `metaTitle`, `metaDescription` | string |
+
+### `FormalEducation`
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | string (UUID) | |
+| `institution` | string | Required |
+| `degree` | string | e.g. "Bachelor of Science" |
+| `fieldOfStudy` | string | e.g. "Computer Science" |
+| `startDate` | date | `YYYY-MM-DD` |
+| `endDate` | date \| null | `null` = ongoing/current |
+| `description` | string | |
+| `location` | string | |
+| `grade` | string | GPA/grade as string |
+
+### `Achievement`
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | string (UUID) | |
+| `name` | string | Required |
+| `imageUrl` | string | |
+| `description` | string | |
+| `achievedDate` | date \| null | `YYYY-MM-DD` |
+| `issuer` | string | Granting organization |
 
 ### `Project`
 
@@ -380,7 +545,9 @@ Delete a media item by its UUID.
 | Model | Fields |
 |---|---|
 | `SkillTechnologyRequest` | `name`, `iconSvg`, `category` |
-| `SiteSettingsRequest` | `heroTitle`, `heroSubtitle`, `aboutMe`, `resumeUrl`, `githubUrl`, `twitterUrl`, `linkedInUrl`, `metaTitle`, `metaDescription` |
+| `FormalEducationRequest` | `institution`, `degree`, `fieldOfStudy`, `startDate`, `endDate`, `description`, `location`, `grade` |
+| `AchievementRequest` | `name`, `imageUrl`, `description`, `achievedDate`, `issuer` |
+| `SiteSettingsRequest` | `heroTitle`, `heroSubtitle`, `aboutMe`, `phone`, `email`, `resumeUrl`, `githubUrl`, `twitterUrl`, `linkedInUrl`, `metaTitle`, `metaDescription` |
 | `ProjectRequest` | `name`, `description`, `techStack`, `projectUrl`, `repoUrl`, `featuredImageUrl`, `featured`, `status`, `completedAt`, `skills` (string[]), `media` (`ProjectMediaRequest[]`) |
 | `ProjectMediaRequest` | `mediaUrl`, `caption`, `displayOrder` |
 | `RegisterRequest` | `username`, `password` |
@@ -396,7 +563,7 @@ Delete a media item by its UUID.
 | `201 Created` | Resource created, body contains the new resource |
 | `204 No Content` | Resource deleted, no body |
 | `401 Unauthorized` | Missing/invalid JWT token |
-| `404 Not Found` | Resource (or related project/skill) not found |
+| `404 Not Found` | Resource (or related project/skill/education/achievement) not found |
 | `500 Internal Server Error` | Unexpected server error |
 
 ---

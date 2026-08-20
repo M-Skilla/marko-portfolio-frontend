@@ -8,6 +8,8 @@ import { PortfolioHeader } from "./_components/portfolio-header"
 import { PortfolioHero } from "./_components/portfolio-hero"
 import { SkillsSection } from "./_components/skills-section"
 import { ProjectsSection } from "./_components/projects-section"
+import { EducationSection } from "./_components/education-section"
+import { AchievementsSection } from "./_components/achievements-section"
 import { HeroSkeleton, SectionSkeleton } from "./_components/portfolio-skeletons"
 
 const DEFAULT_TITLE = "Marko Portfolio"
@@ -45,6 +47,14 @@ export default function Home() {
 
         <Suspense fallback={<SectionSkeleton />}>
           <ProjectsSection />
+        </Suspense>
+
+        <Suspense fallback={<SectionSkeleton />}>
+          <EducationSection />
+        </Suspense>
+
+        <Suspense fallback={<SectionSkeleton />}>
+          <AchievementsSection />
         </Suspense>
       </main>
 

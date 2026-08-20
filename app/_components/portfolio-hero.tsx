@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUpRight } from "lucide-react"
+import { ArrowDown, ArrowUpRight, Mail, Phone } from "lucide-react"
 
 import { Logo } from "@/components/logo"
 import { Button } from "@/components/ui/button"
@@ -58,6 +58,29 @@ export async function PortfolioHero() {
               <ArrowUpRight data-icon="inline-end" />
             </Button>
           ))}
+        </div>
+      ) : null}
+
+      {site?.email || site?.phone ? (
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground">
+          {site.email ? (
+            <a
+              href={`mailto:${site.email}`}
+              className="inline-flex items-center gap-1.5 underline-offset-4 transition-colors hover:text-foreground hover:underline"
+            >
+              <Mail className="size-4 shrink-0" aria-hidden="true" />
+              {site.email}
+            </a>
+          ) : null}
+          {site.phone ? (
+            <a
+              href={`tel:${site.phone}`}
+              className="inline-flex items-center gap-1.5 underline-offset-4 transition-colors hover:text-foreground hover:underline"
+            >
+              <Phone className="size-4 shrink-0" aria-hidden="true" />
+              {site.phone}
+            </a>
+          ) : null}
         </div>
       ) : null}
 

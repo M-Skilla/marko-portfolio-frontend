@@ -18,6 +18,18 @@ export function PortfolioHeader() {
           >
             Skills
           </a>
+          <a
+            href="#education"
+            className="rounded-md px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            Education
+          </a>
+          <a
+            href="#achievements"
+            className="rounded-md px-2.5 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            Achievements
+          </a>
         </nav>
       </div>
     </header>

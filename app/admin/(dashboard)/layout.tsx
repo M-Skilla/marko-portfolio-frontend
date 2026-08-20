@@ -40,6 +40,18 @@ export default async function DashboardLayout({ children }: { children: React.Re
             Skills
           </Link>
           <Link
+            href="/admin/education"
+            className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            Education
+          </Link>
+          <Link
+            href="/admin/achievements"
+            className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+          >
+            Achievements
+          </Link>
+          <Link
             href="/admin/site"
             className="rounded-md px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >

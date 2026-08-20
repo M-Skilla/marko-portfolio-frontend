@@ -69,6 +69,8 @@ export type SiteSettings = {
   linkedInUrl?: string
   metaTitle?: string
   metaDescription?: string
+  phone?: string
+  email?: string
 }
 
 export type SiteSettingsRequest = {
@@ -81,6 +83,54 @@ export type SiteSettingsRequest = {
   linkedInUrl?: string
   metaTitle?: string
   metaDescription?: string
+  phone?: string
+  email?: string
+}
+
+export type FormalEducation = {
+  id: string
+  institution: string
+  degree?: string
+  fieldOfStudy?: string
+  /** Format `YYYY-MM-DD`. */
+  startDate: string
+  /** Format `YYYY-MM-DD`, or `null` when still ongoing/current. */
+  endDate: string | null
+  description?: string
+  location?: string
+  grade?: string
+}
+
+export type FormalEducationRequest = {
+  institution: string
+  degree?: string
+  fieldOfStudy?: string
+  /** Format `YYYY-MM-DD`. */
+  startDate?: string
+  /** Format `YYYY-MM-DD`, or `null` when still ongoing/current. */
+  endDate?: string | null
+  description?: string
+  location?: string
+  grade?: string
+}
+
+export type Achievement = {
+  id: string
+  name: string
+  imageUrl?: string
+  description?: string
+  /** Format `YYYY-MM-DD`. */
+  achievedDate?: string | null
+  issuer?: string
+}
+
+export type AchievementRequest = {
+  name: string
+  imageUrl?: string
+  description?: string
+  /** Format `YYYY-MM-DD`, or `null` when unknown. */
+  achievedDate?: string | null
+  issuer?: string
 }
 
 export type CategoryCount = {
@@ -112,6 +162,12 @@ export type DashboardStats = {
     recent: RecentProject[]
   }
   media: {
+    total: number
+  }
+  education: {
+    total: number
+  }
+  achievements: {
     total: number
   }
   site: {

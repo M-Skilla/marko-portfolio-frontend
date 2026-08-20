@@ -76,6 +76,8 @@ function buildSiteSettingsRequest(body: SiteSettingsRequest): SiteSettingsReques
     "linkedInUrl",
     "metaTitle",
     "metaDescription",
+    "phone",
+    "email",
   ] as const) {
     const value = body[key]
     if (value !== undefined) request[key] = value.trim()
