@@ -189,7 +189,7 @@ export function SiteSettingsForm({ settings }: SiteSettingsFormProps) {
           </FieldGroup>
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="mt-5">
           <Button type="submit" size="lg" disabled={isSubmitting}>
             {isSubmitting ? <Spinner data-icon="inline-start" /> : null}
             {isSubmitting ? "Saving…" : "Save changes"}
