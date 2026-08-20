@@ -44,7 +44,6 @@ type FieldErrors = {
 }
 
 type EducationFormProps = {
-  /** When provided, the form edits an existing entry instead of creating one. */
   education?: FormalEducation
 }
 
@@ -140,7 +139,7 @@ export function EducationForm({ education }: EducationFormProps) {
               <Input
                 id="institution"
                 name="institution"
-                placeholder="e.g. University of Zagreb"
+                placeholder="e.g. University of Dodoma"
                 value={form.institution}
                 onChange={(event) => updateField("institution", event.target.value)}
                 aria-invalid={fieldErrors.institution ? true : undefined}
@@ -207,7 +206,7 @@ export function EducationForm({ education }: EducationFormProps) {
                 <Input
                   id="location"
                   name="location"
-                  placeholder="e.g. Zagreb, Croatia"
+                  placeholder="e.g. Dodoma, Tanzania"
                   value={form.location}
                   onChange={(event) => updateField("location", event.target.value)}
                 />

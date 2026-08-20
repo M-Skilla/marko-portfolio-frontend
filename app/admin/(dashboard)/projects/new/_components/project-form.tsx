@@ -85,25 +85,25 @@ export function ProjectForm() {
     completedAt: "",
   })
   const [selectedSkills, setSelectedSkills] = useState<string[]>([])
-  const [skills, setSkills] = useState<SkillTechnology[]>([])
+  // const [skills, setSkills] = useState<SkillTechnology[]>([])
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({})
   const [formError, setFormError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  useEffect(() => {
-    let cancelled = false
-    axios
-      .get<SkillTechnology[]>("/api/skills")
-      .then(({ data }) => {
-        if (!cancelled) setSkills(data)
-      })
-      .catch(() => {
-        // Skills are optional — the form still works if they can't be loaded.
-      })
-    return () => {
-      cancelled = true
-    }
-  }, [])
+  // useEffect(() => {
+  //   let cancelled = false
+  //   axios
+  //     .get<SkillTechnology[]>("/api/skills")
+  //     .then(({ data }) => {
+  //       if (!cancelled) setSkills(data)
+  //     })
+  //     .catch(() => {
+  //       // Skills are optional — the form still works if they can't be loaded.
+  //     })
+  //   return () => {
+  //     cancelled = true
+  //   }
+  // }, [])
 
   function updateField<Key extends keyof FormState>(key: Key, value: FormState[Key]) {
     setForm((current) => ({ ...current, [key]: value }))
@@ -135,7 +135,7 @@ export function ProjectForm() {
         ...form,
         name: form.name.trim(),
         completedAt: form.completedAt || undefined,
-        skills: selectedSkills,
+        // skills: selectedSkills,
       })
 
       router.push("/admin/projects")
@@ -285,7 +285,7 @@ export function ProjectForm() {
               </Field>
             </div>
 
-            <FieldSet>
+            {/* <FieldSet>
               <FieldLegend>Skills</FieldLegend>
               {skills.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
@@ -307,7 +307,7 @@ export function ProjectForm() {
                   ))}
                 </div>
               )}
-            </FieldSet>
+            </FieldSet> */}
 
             {formError ? (
               <Alert variant="destructive">
@@ -319,7 +319,7 @@ export function ProjectForm() {
           </FieldGroup>
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="mt-5">
           <Button type="submit" size="lg" disabled={isSubmitting}>
             {isSubmitting ? <Spinner data-icon="inline-start" /> : null}
             {isSubmitting ? "Saving…" : "Create project"}
