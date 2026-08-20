@@ -248,7 +248,7 @@ export function EducationForm({ education }: EducationFormProps) {
           </FieldGroup>
         </CardContent>
 
-        <CardFooter>
+        <CardFooter className="mt-5">
           <Button type="submit" size="lg" disabled={isSubmitting}>
             {isSubmitting ? <Spinner data-icon="inline-start" /> : null}
             {isSubmitting ? "Saving…" : isEditing ? "Save changes" : "Create entry"}
